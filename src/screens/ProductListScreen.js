@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
 import Loading from '../components/Loading';
 import ErrorView from '../components/ErrorView';
@@ -19,6 +20,7 @@ export default function ProductListScreen({ onSelectProduct }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
 
   // Search filter
   const filteredProducts = useMemo(() => {
@@ -80,6 +82,8 @@ export default function ProductListScreen({ onSelectProduct }) {
           renderItem={({ item }) => (
             <ProductCard
               product={item}
+              isFavorite={isInWishlist(item.id)}
+              onToggleFavorite={() => toggleWishlist(item)}
               onAddToCart={() => handleAddToCart(item)}
               onPress={() => onSelectProduct && onSelectProduct(item)}
             />
@@ -96,17 +100,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   header: {
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
   searchInput: {
-    backgroundColor: '#f1f3f5',
+    backgroundColor: '#f0f2f5',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
-    fontSize: 14,
+    fontSize: 13,
     color: '#333',
   },
   listContent: {

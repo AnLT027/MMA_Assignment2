@@ -8,15 +8,18 @@ import {
   StatusBar,
 } from 'react-native';
 import { CartProvider, useCart } from './src/context/CartContext';
+import { WishlistProvider, useWishlist } from './src/context/WishlistContext';
 import ProductListScreen from './src/screens/ProductListScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
 import CartScreen from './src/screens/CartScreen';
+import WishlistScreen from './src/screens/WishlistScreen';
 
 function MainApp() {
-  const [currentTab, setCurrentTab] = useState('products'); // 'products' | 'cart'
+  const [currentTab, setCurrentTab] = useState('products'); // 'products' | 'cart' | 'wishlist'
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const { totalCount } = useCart();
+  const { wishlistItems } = useWishlist();
 
   // Khi chọn xem chi tiết sản phẩm
   if (selectedProduct) {
@@ -39,6 +42,9 @@ function MainApp() {
         )}
         {currentTab === 'cart' && (
           <CartScreen onGoShopping={() => setCurrentTab('products')} />
+        )}
+        {currentTab === 'wishlist' && (
+          <WishlistScreen onSelectProduct={(p) => setSelectedProduct(p)} />
         )}
       </View>
 
@@ -74,6 +80,25 @@ function MainApp() {
             Giỏ hàng
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => setCurrentTab('wishlist')}
+        >
+          <View style={styles.iconWithBadge}>
+            <Text style={[styles.navIcon, currentTab === 'wishlist' && styles.activeIcon]}>
+              ❤️
+            </Text>
+            {wishlistItems.length > 0 && (
+              <View style={[styles.badge, styles.wishlistBadge]}>
+                <Text style={styles.badgeText}>{wishlistItems.length}</Text>
+              </View>
+            )}
+          </View>
+          <Text style={[styles.navText, currentTab === 'wishlist' && styles.activeText]}>
+            Yêu thích
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -82,7 +107,9 @@ function MainApp() {
 export default function App() {
   return (
     <CartProvider>
-      <MainApp />
+      <WishlistProvider>
+        <MainApp />
+      </WishlistProvider>
     </CartProvider>
   );
 }
@@ -143,6 +170,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 3,
+  },
+  wishlistBadge: {
+    backgroundColor: '#e91e63',
   },
   badgeText: {
     color: '#fff',

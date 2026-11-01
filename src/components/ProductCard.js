@@ -5,6 +5,8 @@ export default function ProductCard({
   product,
   onPress,
   onAddToCart,
+  isFavorite = false,
+  onToggleFavorite,
 }) {
   return (
     <TouchableOpacity
@@ -18,6 +20,15 @@ export default function ProductCard({
           style={styles.image}
           resizeMode="contain"
         />
+        {onToggleFavorite && (
+          <TouchableOpacity
+            style={styles.favoriteBtn}
+            onPress={onToggleFavorite}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Text style={styles.favoriteIcon}>{isFavorite ? '❤️' : '🤍'}</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.infoContainer}>
@@ -55,6 +66,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imageContainer: {
+    position: 'relative',
     width: 90,
     height: 90,
     backgroundColor: '#fafafa',
@@ -64,6 +76,17 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  favoriteBtn: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    borderRadius: 12,
+    padding: 2,
+  },
+  favoriteIcon: {
+    fontSize: 14,
   },
   infoContainer: {
     flex: 1,
@@ -75,28 +98,27 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   title: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: '#222',
     marginVertical: 4,
   },
   price: {
-    fontSize: 15,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '700',
     color: '#0066cc',
-    marginTop: 2,
+    marginBottom: 6,
   },
   addButton: {
-    alignSelf: 'flex-start',
     backgroundColor: '#0066cc',
     paddingVertical: 5,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     borderRadius: 4,
-    marginTop: 8,
+    alignSelf: 'flex-start',
   },
   addButtonText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
   },
 });
