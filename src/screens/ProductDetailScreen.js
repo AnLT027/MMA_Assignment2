@@ -9,13 +9,17 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { triggerLocalNotification } from '../services/notificationService';
 
 export default function ProductDetailScreen({ product, onBack }) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
 
   if (!product) return null;
+
+  const isFavorite = isInWishlist(product.id);
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
@@ -31,6 +35,12 @@ export default function ProductDetailScreen({ product, onBack }) {
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
           <Text style={styles.backButtonText}>← Quay lại</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.favoriteButton}
+          onPress={() => toggleWishlist(product)}
+        >
+          <Text style={styles.favoriteText}>{isFavorite ? '❤️' : '🤍'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -110,113 +120,122 @@ const styles = StyleSheet.create({
     borderBottomColor: '#eee',
   },
   backButton: {
-    paddingVertical: 6,
+    paddingVertical: 4,
     paddingHorizontal: 8,
   },
   backButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#0066cc',
     fontWeight: '600',
   },
+  favoriteButton: {
+    padding: 6,
+  },
+  favoriteText: {
+    fontSize: 22,
+  },
   scrollContent: {
+    padding: 16,
     paddingBottom: 40,
   },
   imageContainer: {
     width: '100%',
-    height: 300,
+    height: 260,
     backgroundColor: '#fafafa',
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    marginBottom: 16,
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: '90%',
+    height: '90%',
   },
   detailsContainer: {
-    padding: 20,
+    flex: 1,
   },
   category: {
     fontSize: 12,
     color: '#888',
-    letterSpacing: 1,
-    marginBottom: 6,
+    letterSpacing: 0.5,
+    marginBottom: 4,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: '700',
     color: '#222',
-    lineHeight: 28,
+    lineHeight: 24,
+    marginBottom: 10,
   },
   priceRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginVertical: 14,
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
   price: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#0066cc',
   },
   rating: {
     fontSize: 13,
-    color: '#e67e22',
+    color: '#666',
   },
   descTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: '#333',
-    marginTop: 10,
     marginBottom: 6,
   },
   description: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#555',
-    lineHeight: 22,
+    lineHeight: 20,
   },
   bottomBar: {
     flexDirection: 'row',
+    alignItems: 'center',
     padding: 12,
     borderTopWidth: 1,
     borderTopColor: '#eee',
     backgroundColor: '#fff',
-    alignItems: 'center',
   },
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 8,
+    borderRadius: 6,
     marginRight: 12,
   },
   qtyBtn: {
+    paddingVertical: 6,
     paddingHorizontal: 12,
-    paddingVertical: 8,
   },
   qtyBtnText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
   },
   qtyValue: {
-    paddingHorizontal: 8,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    paddingHorizontal: 8,
   },
   addToCartBtn: {
     flex: 1,
     backgroundColor: '#0066cc',
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 6,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   addToCartText: {
     color: '#fff',
-    fontSize: 15,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
