@@ -1,7 +1,11 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default function ProductCard({ product, onPress }) {
+export default function ProductCard({
+  product,
+  onPress,
+  onAddToCart,
+}) {
   return (
     <TouchableOpacity
       style={styles.card}
@@ -24,6 +28,16 @@ export default function ProductCard({ product, onPress }) {
           {product.title}
         </Text>
         <Text style={styles.price}>${Number(product.price).toFixed(2)}</Text>
+
+        {onAddToCart && (
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={onAddToCart}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.addButtonText}>+ Giỏ hàng</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -71,5 +85,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#0066cc',
     marginTop: 2,
+  },
+  addButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#0066cc',
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+    marginTop: 8,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

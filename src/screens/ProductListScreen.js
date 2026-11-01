@@ -7,14 +7,18 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { useProducts } from '../hooks/useProducts';
+import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
 import Loading from '../components/Loading';
 import ErrorView from '../components/ErrorView';
 import EmptyView from '../components/EmptyView';
+import { triggerLocalNotification } from '../services/notificationService';
 
 export default function ProductListScreen({ onSelectProduct }) {
   const { products, loading, refreshing, error, onRefresh, reload } = useProducts();
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { addToCart } = useCart();
 
   // Search filter
   const filteredProducts = useMemo(() => {
@@ -26,6 +30,14 @@ export default function ProductListScreen({ onSelectProduct }) {
         p.category?.toLowerCase().includes(q)
     );
   }, [products, searchQuery]);
+
+  const handleAddToCart = (product) => {
+    addToCart(product, 1);
+    triggerLocalNotification(
+      'Giỏ hàng',
+      `Đã thêm "${product.title.slice(0, 30)}..." vào giỏ hàng!`
+    );
+  };
 
   // 1. Trạng thái Loading
   if (loading) {
@@ -68,6 +80,7 @@ export default function ProductListScreen({ onSelectProduct }) {
           renderItem={({ item }) => (
             <ProductCard
               product={item}
+              onAddToCart={() => handleAddToCart(item)}
               onPress={() => onSelectProduct && onSelectProduct(item)}
             />
           )}

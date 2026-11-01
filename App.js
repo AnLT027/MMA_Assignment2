@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import {
   View,
+  Text,
+  TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { CartProvider, useCart } from './src/context/CartContext';
 import ProductListScreen from './src/screens/ProductListScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
+import CartScreen from './src/screens/CartScreen';
 
-export default function App() {
+function MainApp() {
+  const [currentTab, setCurrentTab] = useState('products'); // 'products' | 'cart'
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const { totalCount } = useCart();
 
   // Khi chọn xem chi tiết sản phẩm
   if (selectedProduct) {
@@ -24,10 +31,59 @@ export default function App() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+
+      {/* Main Content View */}
       <View style={styles.content}>
-        <ProductListScreen onSelectProduct={(p) => setSelectedProduct(p)} />
+        {currentTab === 'products' && (
+          <ProductListScreen onSelectProduct={(p) => setSelectedProduct(p)} />
+        )}
+        {currentTab === 'cart' && (
+          <CartScreen onGoShopping={() => setCurrentTab('products')} />
+        )}
+      </View>
+
+      {/* Bottom Navigation Bar */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => setCurrentTab('products')}
+        >
+          <Text style={[styles.navIcon, currentTab === 'products' && styles.activeIcon]}>
+            🛍️
+          </Text>
+          <Text style={[styles.navText, currentTab === 'products' && styles.activeText]}>
+            Sản phẩm
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => setCurrentTab('cart')}
+        >
+          <View style={styles.iconWithBadge}>
+            <Text style={[styles.navIcon, currentTab === 'cart' && styles.activeIcon]}>
+              🛒
+            </Text>
+            {totalCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{totalCount > 99 ? '99+' : totalCount}</Text>
+              </View>
+            )}
+          </View>
+          <Text style={[styles.navText, currentTab === 'cart' && styles.activeText]}>
+            Giỏ hàng
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
+  );
+}
+
+export default function App() {
+  return (
+    <CartProvider>
+      <MainApp />
+    </CartProvider>
   );
 }
 
@@ -38,5 +94,59 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    height: 56,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  navItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 4,
+  },
+  navIcon: {
+    fontSize: 20,
+    opacity: 0.6,
+  },
+  activeIcon: {
+    opacity: 1,
+    transform: [{ scale: 1.1 }],
+  },
+  navText: {
+    fontSize: 10,
+    color: '#777',
+    marginTop: 2,
+  },
+  activeText: {
+    color: '#0066cc',
+    fontWeight: '700',
+  },
+  iconWithBadge: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -10,
+    backgroundColor: '#e53935',
+    borderRadius: 9,
+    minWidth: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: 'bold',
   },
 });

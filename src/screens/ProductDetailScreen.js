@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,22 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
+import { useCart } from '../context/CartContext';
+import { triggerLocalNotification } from '../services/notificationService';
 
 export default function ProductDetailScreen({ product, onBack }) {
+  const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
+
   if (!product) return null;
+
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    triggerLocalNotification(
+      'Giỏ hàng',
+      `Đã thêm ${quantity}x "${product.title.slice(0, 25)}..." vào giỏ hàng!`
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -49,6 +62,35 @@ export default function ProductDetailScreen({ product, onBack }) {
           <Text style={styles.description}>{product.description}</Text>
         </View>
       </ScrollView>
+
+      {/* Bottom Action Bar */}
+      <View style={styles.bottomBar}>
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity
+            style={styles.qtyBtn}
+            onPress={() => setQuantity((q) => Math.max(1, q - 1))}
+          >
+            <Text style={styles.qtyBtnText}>-</Text>
+          </TouchableOpacity>
+          <Text style={styles.qtyValue}>{quantity}</Text>
+          <TouchableOpacity
+            style={styles.qtyBtn}
+            onPress={() => setQuantity((q) => q + 1)}
+          >
+            <Text style={styles.qtyBtnText}>+</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          style={styles.addToCartBtn}
+          onPress={handleAddToCart}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addToCartText}>
+            Thêm vào giỏ • ${(product.price * quantity).toFixed(2)}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -132,5 +174,49 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
     lineHeight: 22,
+  },
+  bottomBar: {
+    flexDirection: 'row',
+    padding: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    backgroundColor: '#fff',
+    alignItems: 'center',
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  qtyBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  qtyBtnText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  qtyValue: {
+    paddingHorizontal: 8,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  addToCartBtn: {
+    flex: 1,
+    backgroundColor: '#0066cc',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addToCartText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: 'bold',
   },
 });
