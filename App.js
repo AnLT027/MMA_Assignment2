@@ -13,9 +13,10 @@ import ProductListScreen from './src/screens/ProductListScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
 import CartScreen from './src/screens/CartScreen';
 import WishlistScreen from './src/screens/WishlistScreen';
+import GeminiScreen from './src/screens/GeminiScreen';
 
 function MainApp() {
-  const [currentTab, setCurrentTab] = useState('products'); // 'products' | 'cart' | 'wishlist'
+  const [currentTab, setCurrentTab] = useState('products'); // 'products' | 'cart' | 'wishlist' | 'ai'
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const { totalCount } = useCart();
@@ -45,6 +46,9 @@ function MainApp() {
         )}
         {currentTab === 'wishlist' && (
           <WishlistScreen onSelectProduct={(p) => setSelectedProduct(p)} />
+        )}
+        {currentTab === 'ai' && (
+          <GeminiScreen onSelectProduct={(p) => setSelectedProduct(p)} />
         )}
       </View>
 
@@ -97,6 +101,18 @@ function MainApp() {
           </View>
           <Text style={[styles.navText, currentTab === 'wishlist' && styles.activeText]}>
             Yêu thích
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => setCurrentTab('ai')}
+        >
+          <Text style={[styles.navIcon, currentTab === 'ai' && styles.activeIcon]}>
+            🤖
+          </Text>
+          <Text style={[styles.navText, currentTab === 'ai' && styles.activeText]}>
+            Gemini AI
           </Text>
         </TouchableOpacity>
       </View>
